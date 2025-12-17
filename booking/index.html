@@ -1,0 +1,158 @@
+﻿<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://svityazhome.com/booking/">
+  <title>Бронювання Svityaz Home — запит на дати</title>
+  <meta name="description" content="Забронюйте садибу Svityaz Home біля озера Світязь (вул. Лісова 55). Вкажіть дати, гостей і тип номера — підтверджуємо напряму, без комісій.">
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../images/favicon/site.webmanifest">
+  <link rel="shortcut icon" href="../images/favicon/favicon.ico">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body data-page="booking">
+  <header class="site-header">
+    <div class="container nav-bar">
+      <a class="brand" href="../">
+        <span class="brand__dot"></span>
+        SvityazHOME
+      </a>
+      <nav class="nav">
+        <div class="nav__links" id="navLinks">
+          <a class="nav__link" data-nav="home" href="../">Головна</a>
+          <a class="nav__link" data-nav="about" href="../about/">Про нас</a>
+          <a class="nav__link" data-nav="gallery" href="../gallery/">Галерея</a>
+          <a class="nav__link" data-nav="rooms" href="../rooms/">Номери</a>
+          <a class="nav__link" data-nav="booking" href="../booking/">Бронювання</a>
+        </div>
+        <div class="nav__cta">
+          <a class="btn btn-primary" href="../booking/">Забронювати</a>
+        </div>
+        <button class="nav-toggle" aria-label="Меню" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <header class="section-head" data-sr>
+          <p class="kicker">Бронювання</p>
+          <h1>Надішліть запит — відповімо швидко</h1>
+          <p>Заповніть форму: ми зв’яжемось і підтвердимо бронювання без комісій. Садиба за 5–10 хв пішки від озера Світязь, тиха територія з BBQ та альтанками.</p>
+        </header>
+
+        <div class="grid grid-2">
+          <form class="card form" id="bookingForm" action="https://formspree.io/f/xjknzpvz" method="POST" novalidate data-sr>
+            <div class="form-row">
+              <label>Ім'я*<br><input class="input" type="text" name="name" autocomplete="name" required></label>
+              <label>Email*<br><input class="input" type="email" name="email" autocomplete="email" required></label>
+            </div>
+            <div class="form-row">
+              <label>Телефон*<br><input class="input" type="tel" name="phone" inputmode="tel" autocomplete="tel" required></label>
+              <label>Кількість гостей*<br>
+                <select class="input" name="guests" required>
+                  <option value="" disabled selected>Оберіть</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label>Дата заїзду*<br><input class="input" type="date" name="checkin" required></label>
+              <label>Дата виїзду*<br><input class="input" type="date" name="checkout" required></label>
+            </div>
+            <div class="form-row">
+              <label>Тип номера*<br>
+                <select class="input" name="roomType" required>
+                  <option value="" disabled selected>Оберіть тип</option>
+                  <option value="two-standard">Двомісний стандарт</option>
+                  <option value="three-lux">Тримісний люкс</option>
+                  <option value="three-standard">Тримісний стандарт</option>
+                  <option value="three-economy">Тримісний економ</option>
+                  <option value="four-lux">Чотиримісний люкс</option>
+                  <option value="six-standard">Шестимісний стандарт</option>
+                  <option value="bunk-7">Двоярусний люкс на 7 (№9/10)</option>
+                  <option value="bunk-8">Двоярусний люкс 8+ (№12)</option>
+                  <option value="eight-lux">Восьмимісний люкс</option>
+                </select>
+              </label>
+              <label>Додатково<br>
+                <select class="input" name="extras">
+                  <option value="none" selected>Без додаткових послуг</option>
+                  <option value="transfer">Трансфер</option>
+                  <option value="sup">Оренда SUP</option>
+                  <option value="bbq">BBQ-набір</option>
+                  <option value="breakfast">Сніданок / домашня кухня</option>
+                </select>
+              </label>
+            </div>
+            <label>Коментар<br>
+              <textarea class="input" name="notes" rows="3" placeholder="Побажання до заселення, час прибуття тощо"></textarea>
+            </label>
+            <input type="hidden" name="_subject" value="Бронювання з сайту SvityazHOME">
+            <input type="hidden" name="_language" value="uk">
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px">
+            <div id="bookingMessage" class="message" aria-live="polite"></div>
+            <button class="btn btn-primary" type="submit">Надіслати заявку</button>
+          </form>
+
+          <aside class="summary card" data-sr data-sr-delay="80">
+            <h3>Підсумок</h3>
+            <ul id="bookingSummary"></ul>
+            <p>Оплата при заселенні готівкою або переказом. Це приватна садиба без SPA чи all-inclusive — тиха зелена територія, BBQ та прогулянки до озера.</p>
+            <a class="btn btn-ghost" href="../rooms/">Подивитись усі номери</a>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer__grid">
+      <div>
+        <h3>SvityazHOME</h3>
+        <p>Приватна садиба біля озера Світязь: кімнати для 2–8 гостей, парковка, альтанки, мангал/BBQ та Wi‑Fi. Домашня атмосфера і бронювання напряму у господарів.</p>
+      </div>
+      <div>
+        <h4>Сторінки</h4>
+        <ul>
+          <li><a href="../">Головна</a></li>
+          <li><a href="../about/">Про нас</a></li>
+          <li><a href="../gallery/">Галерея</a></li>
+          <li><a href="../rooms/">Номери</a></li>
+          <li><a href="../booking/">Бронювання</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Контакти</h4>
+        <p>Світязь, вул. Лісова 55</p>
+        <p><a href="tel:+380938578540">+380 93 857 85 40</a><br><a href="mailto:svityazhome@gmail.com">svityazhome@gmail.com</a></p>
+      </div>
+      <div>
+        <h4>Соцмережі</h4>
+        <div class="social">
+          <a href="https://facebook.com/svityazhome" rel="noopener">Facebook</a>
+          <a href="https://instagram.com/svityazhome" rel="noopener">Instagram</a>
+          <a href="https://t.me/svityazhome" rel="noopener">Telegram</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© 2025 SvityazHOME. Усі права захищено.</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>
+
