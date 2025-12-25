@@ -1,4 +1,4 @@
-const CACHE_NAME = 'svityazhome-v2';
+﻿const CACHE_NAME = 'svityazhome-v12';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -11,12 +11,22 @@ const PRECACHE_URLS = [
   '/rooms/index.html',
   '/booking/',
   '/booking/index.html',
+  '/privacy-policy.html',
+  '/terms.html',
+  '/robots.txt',
+  '/sitemap.xml',
   '/assets/css/style.css',
   '/assets/js/main.js',
-  '/images/favicon/apple-touch-icon.png',
-  '/images/favicon/favicon-32x32.png',
-  '/images/favicon/favicon-16x16.png',
-  '/images/favicon/site.webmanifest',
+  '/assets/partials/header.html',
+  '/assets/partials/footer.html',
+  '/favicon.ico',
+  '/assets/images/favicon/apple-touch-icon.png',
+  '/assets/images/favicon/favicon-32x32.png',
+  '/assets/images/favicon/favicon-16x16.png',
+  '/assets/images/favicon/favicon.ico',
+  '/assets/images/favicon/android-chrome-192x192.png',
+  '/assets/images/favicon/android-chrome-512x512.png',
+  '/assets/images/favicon/site.webmanifest',
 ];
 
 self.addEventListener('install', (event) => {
@@ -78,3 +88,9 @@ async function networkFirst(request) {
     return caches.match('/index.html');
   }
 }
+
+
+
+
+
+

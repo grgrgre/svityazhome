@@ -64,6 +64,9 @@ site-footer
 site-header
 social
 summary
+theme-toggle
+theme-toggle--floating
+theme-toggle__icon
 u-flex
 u-gap-4
 u-items-center
@@ -96,6 +99,7 @@ navLinks
 data-caption
 data-nav
 data-page
+data-theme
 data-sr
 data-src
 data-sr-delay
@@ -106,6 +110,7 @@ data-sr-delay
 - `is-active` — активний пункт меню (підсвічування)
 - `is-scrolled` — хедер після скролу
 - `is-open` — мобільне меню та лайтбокс відкриті
+- `is-locked` — блокування скролу body коли відкрите меню або лайтбокс
 - `is-visible` — елемент з `data-sr` вже “проявився”
 - `error` — показ помилки в повідомленні бронювання (`.message.error`)
 
@@ -136,4 +141,3 @@ foreach ($f in $files) {
 }
 $classes | Sort-Object
 ```
-

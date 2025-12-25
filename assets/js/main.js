@@ -1,14 +1,165 @@
 // Shared utilities and interactions for SvityazHOME
-(function () {
+(async function () {
+  const fetchPartial = async (path) => {
+    try {
+      const res = await fetch(path, { cache: 'no-cache' });
+      if (!res.ok) return '';
+      return await res.text();
+    } catch (err) {
+      return '';
+    }
+  };
+
+  const ensurePartials = async () => {
+    const inject = (selector, html, position) => {
+      if (!html) return;
+      const template = document.createElement('div');
+      template.innerHTML = html.trim();
+      const node = template.firstElementChild;
+      if (!node) return;
+
+      const existing = document.querySelector(selector);
+      if (existing) {
+        existing.replaceWith(node);
+      } else {
+        if (position === 'start') {
+          document.body.insertAdjacentElement('afterbegin', node);
+        } else {
+          document.body.insertAdjacentElement('beforeend', node);
+        }
+      }
+    };
+
+    const [headerHtml, footerHtml] = await Promise.all([
+      fetchPartial('/assets/partials/header.html'),
+      fetchPartial('/assets/partials/footer.html'),
+    ]);
+
+    inject('.site-header', headerHtml, 'start');
+    inject('.site-footer', footerHtml, 'end');
+  };
+
+  await ensurePartials();
+
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Theme toggle (light/dark) */
+  const THEME_STORAGE_KEY = 'svityazhome-theme';
+  const root = document.documentElement;
+  const colorSchemeQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+  const getStoredTheme = () => {
+    try {
+      const value = localStorage.getItem(THEME_STORAGE_KEY);
+      return value === 'dark' || value === 'light' ? value : null;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  const setStoredTheme = (theme) => {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch (err) {
+      // ignore
+    }
+  };
+
+  let storedTheme = getStoredTheme();
+
+  const getSystemTheme = () => (colorSchemeQuery && colorSchemeQuery.matches ? 'dark' : 'light');
+  const getEffectiveTheme = () => storedTheme || getSystemTheme();
+  const syncColorScheme = (theme) => {
+    root.style.colorScheme = theme === 'dark' ? 'dark' : 'light';
+  };
+
+  const applyTheme = () => {
+    const theme = getEffectiveTheme();
+    root.dataset.theme = theme;
+    syncColorScheme(theme);
+  };
+
+  const updateThemeToggle = (btn) => {
+    const theme = getEffectiveTheme();
+    const isDark = theme === 'dark';
+    const icon = btn.querySelector('.theme-toggle__icon');
+    if (icon) icon.textContent = isDark ? '☾' : '☀';
+
+    btn.setAttribute('aria-pressed', String(isDark));
+    btn.setAttribute('aria-label', isDark ? 'Перемкнути на світлу тему' : 'Перемкнути на темну тему');
+    btn.title = isDark ? 'Темна тема' : 'Світла тема';
+  };
+
+  const createThemeToggle = () => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'theme-toggle';
+    btn.innerHTML =
+      '<span class="theme-toggle__icon" aria-hidden="true"></span><span class="u-sr-only">Перемкнути тему</span>';
+
+    btn.addEventListener('click', () => {
+      const currentTheme = getEffectiveTheme();
+      storedTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setStoredTheme(storedTheme);
+      applyTheme();
+      updateThemeToggle(btn);
+    });
+
+    return btn;
+  };
+
+  const mountThemeToggle = () => {
+    if ($('.theme-toggle')) return;
+
+    const btn = createThemeToggle();
+    updateThemeToggle(btn);
+
+    const nav = $('.nav');
+    const navToggleBtn = $('.nav-toggle');
+
+    if (nav) {
+      if (navToggleBtn && nav.contains(navToggleBtn)) {
+        nav.insertBefore(btn, navToggleBtn);
+      } else {
+        nav.appendChild(btn);
+      }
+      return;
+    }
+
+    btn.classList.add('theme-toggle--floating');
+    document.body.appendChild(btn);
+  };
+
+  applyTheme();
+  mountThemeToggle();
+
+  const handleSystemThemeChange = () => {
+    if (storedTheme) return;
+    applyTheme();
+    const btn = $('.theme-toggle');
+    if (btn) updateThemeToggle(btn);
+  };
+
+  if (colorSchemeQuery && typeof colorSchemeQuery.addEventListener === 'function') {
+    colorSchemeQuery.addEventListener('change', handleSystemThemeChange);
+  } else if (colorSchemeQuery && typeof colorSchemeQuery.addListener === 'function') {
+    colorSchemeQuery.addListener(handleSystemThemeChange);
+  }
 
   /* Sticky header + active nav */
   const header = $('.site-header');
   const navToggle = $('.nav-toggle');
   const navLinks = $('.nav__links');
   const currentPage = document.body.dataset.page;
+  let lightbox;
+
+  const syncBodyLock = () => {
+    const navOpen = navLinks && navLinks.classList.contains('is-open');
+    const lightboxOpen = lightbox && lightbox.classList.contains('is-open');
+    document.body.classList.toggle('is-locked', Boolean(navOpen || lightboxOpen));
+  };
 
   const setActiveNav = () => {
     $$('[data-nav]').forEach((link) => {
@@ -29,11 +180,20 @@
     navToggle.addEventListener('click', () => {
       const isOpen = navLinks.classList.toggle('is-open');
       navToggle.setAttribute('aria-expanded', String(isOpen));
+      syncBodyLock();
     });
     document.addEventListener('click', (e) => {
       if (!navLinks.contains(e.target) && !navToggle.contains(e.target)) {
         navLinks.classList.remove('is-open');
         navToggle.setAttribute('aria-expanded', 'false');
+        syncBodyLock();
+      }
+    });
+    navLinks.addEventListener('click', (e) => {
+      if (e.target.closest('.nav__link')) {
+        navLinks.classList.remove('is-open');
+        navToggle.setAttribute('aria-expanded', 'false');
+        syncBodyLock();
       }
     });
   }
@@ -61,11 +221,11 @@
   }
 
   /* Lightbox for gallery */
-  let lightbox;
   const ensureLightbox = () => {
     if (lightbox) return lightbox;
     lightbox = document.createElement('div');
     lightbox.className = 'lightbox';
+    lightbox.setAttribute('aria-hidden', 'true');
     lightbox.innerHTML = `
       <div class="lightbox__inner" role="dialog" aria-modal="true">
         <button class="lightbox__close" aria-label="Закрити">&times;</button>
@@ -86,10 +246,16 @@
     $('.lightbox__img', lb).alt = alt;
     $('.lightbox__caption', lb).textContent = alt;
     lb.classList.add('is-open');
+    lb.setAttribute('aria-hidden', 'false');
+    syncBodyLock();
   };
 
   const closeLightbox = () => {
-    if (lightbox) lightbox.classList.remove('is-open');
+    if (lightbox) {
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      syncBodyLock();
+    }
   };
 
   document.addEventListener('click', (e) => {
